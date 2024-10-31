@@ -32,7 +32,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@4137be6a8bf7d7133955359dbd952c0ca73b1021
+        uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
         with:
           arguments: build
   test-mac:
@@ -45,7 +45,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@4137be6a8bf7d7133955359dbd952c0ca73b1021
+        uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
         with:
           arguments: build
   test-linux:
@@ -58,6 +58,6 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: 'temurin'
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@4137be6a8bf7d7133955359dbd952c0ca73b1021
+        uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
         with:
           arguments: build
