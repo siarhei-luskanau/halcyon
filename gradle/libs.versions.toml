@@ -10,7 +10,7 @@ krypto = "4.0.10"
 minidns = "1.1.1"
 reactive = "1.3.0"
 researchgate-release = "3.1.0"
-serialization = "1.6.0"
+serialization = "1.8.0"
 signalProtocol = "2.8.1"
 sphinx = "2.10.1"
 
