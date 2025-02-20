@@ -3,7 +3,7 @@
 bouncycastle = "1.80"
 coroutines = "1.7.3"
 dateTime = "0.6.2"
-dokka = "1.9.20"
+dokka = "2.0.0"
 java-languageVersion = "17"
 kotlin = "1.9.25"
 krypto = "4.0.10"
