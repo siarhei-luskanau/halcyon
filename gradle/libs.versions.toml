@@ -1,6 +1,6 @@
 [versions]
 
-bouncycastle = "1.79"
+bouncycastle = "1.80"
 coroutines = "1.7.3"
 dateTime = "0.6.1"
 dokka = "1.9.20"
