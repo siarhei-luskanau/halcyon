@@ -26,19 +26,9 @@ plugins {
 kotlin {
 
 	iosArm64 {
-		// TODO: Before compilation you need to download https://github.com/tigase/openssl-swiftpm/releases/download/1.1.171/OpenSSL.xcframework.zip to "frameworks" directory and unpack this ZIP file.
-		// TODO: Before compilation it is required to go to OpenSSL.xcframework to each subdirectory and Headers and move all files there to "openssl" subdirectory inside Headers
-		val openSSLFrameworkDir = "$rootDir/frameworks/OpenSSL.xcframework/ios-arm64_armv7";
 		val libsignalFrameworkDir = "$rootDir/frameworks/libsignal.xcframework/ios-arm64"
 		compilations.getByName("main") {
 			cinterops {
-				val OpenSSL by creating {
-					defFile("src/nativeInterop/cinterop/OpenSSL.def")
-					includeDirs("$openSSLFrameworkDir/")
-					compilerOpts(
-						"-F$openSSLFrameworkDir", "-framework", "OpenSSL"
-					)
-				}
 				val libsignal by creating {
 					defFile("src/nativeInterop/cinterop/libsignal.def")
 					includeDirs("$libsignalFrameworkDir/")
@@ -49,16 +39,10 @@ kotlin {
 			}
 			kotlinOptions.freeCompilerArgs = listOf(
 				"-include-binary",
-				"$openSSLFrameworkDir/OpenSSL.framework/OpenSSL",
-				"-include-binary",
 				"$libsignalFrameworkDir/libsignal.framework/libsignal"
 			)
 			binaries.all {
 				linkerOpts(
-					"-F$openSSLFrameworkDir",
-					"-framework",
-					"OpenSSL",
-					"-F$libsignalFrameworkDir",
 					"-framework",
 					"libsignal"
 				)
@@ -67,17 +51,9 @@ kotlin {
 	}
 	// Same target as above for iOS but for Arm64 simulator (simulator in AppleSilicon machine)
 	iosSimulatorArm64 {
-		val openSSLFrameworkDir = "$rootDir/frameworks/OpenSSL.xcframework/ios-arm64_i386_x86_64-simulator"
 		val libsignalFrameworkDir = "$rootDir/frameworks/libsignal.xcframework/ios-arm64_x86_64-simulator"
 		compilations.getByName("main") {
 			cinterops {
-				val OpenSSL by creating {
-					defFile("src/nativeInterop/cinterop/OpenSSL.def")
-					includeDirs("$openSSLFrameworkDir/")
-					compilerOpts(
-						"-F$openSSLFrameworkDir", "-framework", "OpenSSL"
-					)
-				}
 				val libsignal by creating {
 					defFile("src/nativeInterop/cinterop/libsignal.def")
 					includeDirs("$libsignalFrameworkDir/")
@@ -88,16 +64,10 @@ kotlin {
 			}
 			kotlinOptions.freeCompilerArgs = listOf(
 				"-include-binary",
-				"$openSSLFrameworkDir/OpenSSL.framework/OpenSSL",
-				"-include-binary",
 				"$libsignalFrameworkDir/libsignal.framework/libsignal"
 			)
 			binaries.all {
 				linkerOpts(
-					"-F$openSSLFrameworkDir",
-					"-framework",
-					"OpenSSL",
-					"-F$libsignalFrameworkDir",
 					"-framework",
 					"libsignal"
 				)
@@ -111,6 +81,7 @@ kotlin {
 				implementation(libs.kotlinx.serialization.core)
 				implementation(libs.kotlinx.datetime)
 				implementation(libs.krypto)
+				implementation("dev.whyoleg.cryptography:cryptography-core:0.4.0")
 			}
 		}
 		val commonTest by getting {
@@ -129,6 +100,7 @@ kotlin {
 			dependencies {
 				implementation(libs.minidns)
 				implementation(libs.signal.protocol.java)
+				implementation("dev.whyoleg.cryptography:cryptography-provider-jdk:0.4.0")
 			}
 		}
 		val jvmTest by getting {
@@ -136,6 +108,9 @@ kotlin {
 		}
 		val jsMain by getting  {
 			dependsOn(commonMain)
+			dependencies {
+				implementation("dev.whyoleg.cryptography:cryptography-provider-webcrypto:0.4.0")
+			}
 		}
 		val jsTest by getting {
 			dependsOn(commonTest)
@@ -144,6 +119,7 @@ kotlin {
 			dependsOn(omemoMain)
 			dependencies {
 				implementation(libs.kotlinx.datetime)
+				implementation("dev.whyoleg.cryptography:cryptography-provider-apple:0.4.0")
 			}
 		}
 		val iosArm64Main by getting {
@@ -154,11 +130,6 @@ kotlin {
 		}
 	}
 }
-
-//tasks["clean"].doLast {
-//	delete("$rootDir/frameworks/OpenSSL.xcframework")
-//}
-//
 
 tasks["cinteropLibsignalIosArm64"].dependsOn("prepareLibsignal")
 tasks["cinteropLibsignalIosSimulatorArm64"].dependsOn("prepareLibsignal")
@@ -179,32 +150,6 @@ tasks.register("prepareLibsignal") {
 			logger.lifecycle("Unzipping libsignal framework...")
 			copy {
 				from(zipTree("$rootDir/frameworks/libsignal.xcframework.zip"))
-				into("$rootDir/frameworks/")
-			}
-		}
-	}
-}
-
-tasks["cinteropOpenSSLIosArm64"].dependsOn("prepareOpenSSL")
-tasks["cinteropOpenSSLIosSimulatorArm64"].dependsOn("prepareOpenSSL")
-
-tasks.register("prepareOpenSSL") {
-	description = "Downloads and unpack OpenSSL XCFramework."
-	val zipUrl = "https://github.com/tigase/openssl-swiftpm/releases/download/1.1.171/OpenSSL.xcframework.zip"
-
-	fun download(url: String, path: String) = ant.invokeMethod("get", mapOf("src" to url, "dest" to File(path)))
-
-	doLast {
-		if (!File("$rootDir/frameworks/OpenSSL.xcframework.zip").exists()) {
-			logger.lifecycle("Downloading OpenSSL framework...")
-			download(
-				zipUrl, "$rootDir/frameworks/"
-			)
-		}
-		if (!File("$rootDir/frameworks/OpenSSL.xcframework").exists()) {
-			logger.lifecycle("Unzipping OpenSSL framework...")
-			copy {
-				from(zipTree("$rootDir/frameworks/OpenSSL.xcframework.zip"))
 				into("$rootDir/frameworks/")
 			}
 		}

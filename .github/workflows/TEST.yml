@@ -25,19 +25,15 @@ env:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
         os: [
           macos-13,
+          macos-latest,
           ubuntu-latest,
           windows-latest
         ]
-        experimental: [ false ]
-        include:
-          - os: macos-latest
-            experimental: true
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK ${{ env.JAVA_VERSION }}

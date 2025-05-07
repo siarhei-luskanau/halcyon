@@ -1,6 +1,5 @@
 package tigase.halcyon.core.xmpp.modules.omemo
 
-import OpenSSL.*
 import korlibs.crypto.encoding.hex
 import kotlinx.cinterop.*
 import platform.Foundation.NSInputStream
@@ -196,30 +195,8 @@ class AesGcmCipher(val iv: ByteArray, val key: ByteArray) {
 class AesGcmEngine {
 
     fun decrypt(iv: ByteArray, key: ByteArray, payload: ByteArray, tag: ByteArray?): ByteArray? {
-        val ctx = EVP_CIPHER_CTX_new();
-        val cipher = if (key.size == 32) { EVP_aes_256_gcm() } else { EVP_aes_128_gcm() };
-        EVP_DecryptInit_ex(ctx, cipher, null, null, null);
-        EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, iv.size, null);
-        EVP_DecryptInit_ex(ctx, null, null, key.toUByteArray().toCValues(), iv.toUByteArray().toCValues());
-        EVP_CIPHER_CTX_set_padding(ctx, 1);
 
-        var auth = tag ?: payload.copyOfRange(payload.size - 16, payload.size);
-        var encoded = if (tag != null) { payload } else { payload.copyOfRange(0, payload.size - 16) }
-
-        val decrypted = memScoped {
-            val output = allocArray<UByteVar>(encoded.size);
-            val outputLen: IntVar = alloc<IntVar>();
-            EVP_DecryptUpdate(ctx, output, outputLen.ptr, encoded.toUByteArray().toCValues(), encoded.size);
-            
-            val result = output.readBytes(outputLen.value); //output.copyOfRange(0, outputLen.value).toByteArray();
-            EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_CCM_SET_TAG, auth.size, auth.toCValues());
-
-            val ret = EVP_DecryptFinal_ex(ctx, output, outputLen.ptr);
-            return@memScoped if (ret >= 0) { result } else { null }
-        }
-
-        EVP_CIPHER_CTX_free(ctx);
-        return decrypted;
+        return iv;
     }
 
     sealed class DecryptionStep {
@@ -228,47 +205,7 @@ class AesGcmEngine {
     }
 
     fun decrypt(iv: ByteArray, key: ByteArray, chunkProvider: () -> DecryptionStep, chunkConsumer: (UByteArray) -> Unit) {
-        val ctx = EVP_CIPHER_CTX_new();
-        val cipher = if (key.size == 32) { EVP_aes_256_gcm() } else { EVP_aes_128_gcm() };
-        EVP_DecryptInit_ex(ctx, cipher, null, null, null);
-        EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, iv.size, null);
-        EVP_DecryptInit_ex(ctx, null, null, key.toUByteArray().toCValues(), iv.toUByteArray().toCValues());
-        EVP_CIPHER_CTX_set_padding(ctx, 1);
-        
-        var processing = true;
-        while (processing) {
-            val step = chunkProvider();
-            when (step) {
-                is DecryptionStep.InputChunk -> {
-                    memScoped {
-                        val output = allocArray<UByteVar>(step.data.size);
-                        val outputLen: IntVar = alloc<IntVar>();
-                        EVP_DecryptUpdate(
-                            ctx,
-                            output,
-                            outputLen.ptr,
-                            step.data.toUByteArray().toCValues(),
-                            step.data.size
-                        );
-                        chunkConsumer(output.readBytes(outputLen.value).toUByteArray());
-                    }
-                }
-                is DecryptionStep.EndOfInput -> {
-                    step.authTag?.let {
-                        EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_CCM_SET_TAG, it.size, it.toCValues());
-                    }
-
-                    memScoped {
-                        val output = allocArray<UByteVar>(1024);
-                        val outputLen: IntVar = alloc<IntVar>();
-                        val ret = EVP_DecryptFinal_ex(ctx, output, outputLen.ptr);
-                    }
-                    processing = false;
-                }
-            }
-        }
-
-        EVP_CIPHER_CTX_free(ctx);
+        iv
     }
 
     fun decrypt(iv: ByteArray, key: ByteArray, hasAuthTag: Boolean = true, input: NSInputStream, inputLength: Int, output: NSOutputStream) {
@@ -338,76 +275,11 @@ class AesGcmEngine {
     class Encrypted(val data: ByteArray, val tag: ByteArray) {}
 
     fun encrypt(iv: ByteArray, key: ByteArray, payload: ByteArray): Encrypted {
-        val ctx = EVP_CIPHER_CTX_new();
-        val cipher = if (key.size == 32) { EVP_aes_256_gcm() } else { EVP_aes_128_gcm() };
-        EVP_EncryptInit_ex(ctx, cipher, null, null, null);
-        EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, iv.size, null);
-        EVP_EncryptInit_ex(ctx, null, null, key.toUByteArray().toCValues(), iv.toUByteArray().toCValues());
-        EVP_CIPHER_CTX_set_padding(ctx, 1);
-
-        val encrypted = memScoped {
-            val output = allocArray<UByteVar>(payload.size);
-            val outputLen: IntVar = alloc<IntVar>();
-            EVP_EncryptUpdate(ctx, output, outputLen.ptr, payload.toUByteArray().toCValues(), payload.size);
-
-            val result = output.readBytes(outputLen.value);
-
-            EVP_EncryptFinal_ex(ctx, output, outputLen.ptr);
-
-            val tag = UByteArray(16);
-            EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, tag.toCValues());
-            return@memScoped Encrypted(data = result, tag = tag.toByteArray());
-        }
-
-        EVP_CIPHER_CTX_free(ctx);
-        return encrypted;
+         return Encrypted(iv, iv);
     }
 
     fun encrypt(iv: ByteArray, key: ByteArray, includeAuthTag: Boolean = true, chunkProvider: () -> EncryptionStep, chunkConsumer: (UByteArray) -> Unit) {
-        val ctx = EVP_CIPHER_CTX_new();
-        val cipher = if (key.size == 32) { EVP_aes_256_gcm() } else { EVP_aes_128_gcm() };
-        EVP_EncryptInit_ex(ctx, cipher, null, null, null);
-        EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, iv.size, null);
-        EVP_EncryptInit_ex(ctx, null, null, key.toUByteArray().toCValues(), iv.toUByteArray().toCValues());
-        EVP_CIPHER_CTX_set_padding(ctx, 1);
-        
-        var processing = true;
-        while (processing) {
-            val step = chunkProvider();
-            when (step) {
-                is EncryptionStep.InputChunk -> {
-                    memScoped {
-                        val output = allocArray<UByteVar>(step.data.size * 2);
-                        val outputLen: IntVar = alloc<IntVar>();
-                        EVP_EncryptUpdate(
-                            ctx,
-                            output,
-                            outputLen.ptr,
-                            step.data.toUByteArray().toCValues(),
-                            step.data.size
-                        );
-                        chunkConsumer(output.readBytes(outputLen.value).toUByteArray());
-                    }
-                }
-
-                is EncryptionStep.EndOfInput -> {
-                    memScoped {
-                        val output = allocArray<UByteVar>(1024);
-                        val outputLen: IntVar = alloc<IntVar>();
-                        EVP_EncryptFinal_ex(ctx, output, outputLen.ptr);
-                        chunkConsumer(output.readBytes(outputLen.value).toUByteArray());
-                        if (includeAuthTag) {
-                            val tag = allocArray<UByteVar>(16);
-                            EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, tag);
-                            chunkConsumer(tag.readBytes(outputLen.value).toUByteArray());
-                        }
-                    }
-                    processing = false;
-                }
-            }
-        }
-
-        EVP_CIPHER_CTX_free(ctx);
+        iv;
     }
 
     sealed class EncryptionStep {

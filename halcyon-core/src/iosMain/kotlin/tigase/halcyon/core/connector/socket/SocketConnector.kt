@@ -125,7 +125,8 @@ class SocketConnector(halcyon: Halcyon) : AbstractConnector(halcyon) {
 			.toString()
 			.encodeToByteArray()
 		sslEngine?.let { sslEngine ->
-			sslEngine.encrypt(bytes)
+			//sslEngine.encrypt(bytes)
+			bytes
 		} ?: run {
 			writeDataToSocket(bytes)
 		}
@@ -224,7 +225,8 @@ class SocketConnector(halcyon: Halcyon) : AbstractConnector(halcyon) {
 
 	private fun processSocketData(data: ByteArray) {
 		sslEngine?.let { sslEngine ->
-			sslEngine.decrypt(data)
+			//sslEngine.decrypt(data)
+			data
 		} ?: run {
 			process(data)
 		}
