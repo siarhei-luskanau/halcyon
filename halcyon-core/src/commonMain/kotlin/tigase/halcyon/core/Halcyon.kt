@@ -18,5 +18,9 @@
 package tigase.halcyon.core
 
 import tigase.halcyon.core.builder.ConfigurationBuilder
+import tigase.halcyon.core.connector.AbstractConnector
 
-expect class Halcyon(configuration: ConfigurationBuilder) : AbstractHalcyon
+expect class Halcyon(configuration: ConfigurationBuilder) : AbstractHalcyon {
+    override fun reconnect(immediately: Boolean)
+    override fun createConnector(): AbstractConnector
+}

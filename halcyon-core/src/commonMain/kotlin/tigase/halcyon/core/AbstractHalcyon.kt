@@ -88,7 +88,7 @@ abstract class AbstractHalcyon(configurator: ConfigurationBuilder) : Context, Pa
     val internalDataStore = InternalDataStore()
     val requestsManager: RequestsManager = RequestsManager()
     private val executor = tigase.halcyon.core.excutor.Executor()
-    override val config: Configuration
+    override val config: Configuration = configurator.build()
     private val lock = Lock()
     var state = State.Stopped
         get() = lock.withLock { field }
@@ -106,7 +106,6 @@ abstract class AbstractHalcyon(configurator: ConfigurationBuilder) : Context, Pa
 
     init {
         modules.context = this
-        this.config = configurator.build()
 
         eventBus.register(ReceivedXMLElementEvent, ::processReceivedXmlElementEvent)
         eventBus.register(SessionController.SessionControllerEvents, ::onSessionControllerEvent)

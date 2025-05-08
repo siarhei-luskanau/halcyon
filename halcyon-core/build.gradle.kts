@@ -41,7 +41,7 @@ kotlin {
 				"-include-binary",
 				"$libsignalFrameworkDir/libsignal.framework/libsignal"
 			)
-			binaries.all {
+			this@iosArm64.binaries.all {
 				linkerOpts(
 					"-framework",
 					"libsignal"
@@ -66,7 +66,7 @@ kotlin {
 				"-include-binary",
 				"$libsignalFrameworkDir/libsignal.framework/libsignal"
 			)
-			binaries.all {
+			this@iosSimulatorArm64.binaries.all {
 				linkerOpts(
 					"-framework",
 					"libsignal"

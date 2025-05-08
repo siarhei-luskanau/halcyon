@@ -21,8 +21,8 @@ import tigase.halcyon.core.AbstractHalcyon
 
 actual class EventBus actual constructor(context: AbstractHalcyon) : AbstractEventBus(context) {
 
-	override fun createHandlersMap(): MutableMap<String, MutableSet<EventHandler<*>>> = HashMap()
+	actual override fun createHandlersMap(): MutableMap<String, MutableSet<EventHandler<*>>> = HashMap()
 
-	override fun createHandlersSet(): MutableSet<EventHandler<*>> = HashSet()
+	actual override fun createHandlersSet(): MutableSet<EventHandler<*>> = HashSet()
 
 }
