@@ -22,6 +22,7 @@ plugins {
 	signing
 	alias(libs.plugins.researchgate.release)
 	alias(libs.plugins.multiplatform).apply(false)
+	alias(libs.plugins.kotlincocoapods).apply(false)
 }
 
 configure<net.researchgate.release.ReleaseExtension> {

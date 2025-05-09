@@ -19,6 +19,7 @@ plugins {
 	id("kotlinMultiplatformConvention")
 	`maven-publish`
 	signing
+	alias(libs.plugins.kotlincocoapods)
 	alias(libs.plugins.kotlinx.serialization)
 	alias(libs.plugins.jetbrains.dokka)
 }
@@ -151,6 +152,15 @@ kotlin {
 		}
 		val iosSimulatorArm64Main by getting {
 			dependsOn(iosMain)
+		}
+	}
+
+	cocoapods {
+		ios.deploymentTarget = "15.0"
+		pod("LibSignalClient") {
+			source = git("https://github.com/signalapp/libsignal.git") {
+				tag = "v0.71.0"
+			}
 		}
 	}
 }
