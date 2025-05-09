@@ -1,6 +1,6 @@
 package tigase.halcyon.core.xmpp.modules.omemo
 
-import org.whispersystems.libsignal.ecc.Curve
+import org.signal.libsignal.protocol.ecc.Curve
 
 actual fun Bundle.getRandomPreKeyBundle(): PreKeyBundle {
     val preKey = this.preKeys.random()
@@ -16,41 +16,41 @@ actual fun Bundle.getRandomPreKeyBundle(): PreKeyBundle {
     )
 }
 
-actual typealias PreKeyBundle = org.whispersystems.libsignal.state.PreKeyBundle
+actual typealias PreKeyBundle = org.signal.libsignal.protocol.state.PreKeyBundle
 
-actual typealias SignalProtocolAddress = org.whispersystems.libsignal.SignalProtocolAddress
+actual typealias SignalProtocolAddress = org.signal.libsignal.protocol.SignalProtocolAddress
 
-actual typealias ECPublicKey = org.whispersystems.libsignal.ecc.ECPublicKey
-actual typealias ECKeyPair = org.whispersystems.libsignal.ecc.ECKeyPair
-actual typealias IdentityKey = org.whispersystems.libsignal.IdentityKey
+actual typealias ECPublicKey = org.signal.libsignal.protocol.ecc.ECPublicKey
+actual typealias ECKeyPair = org.signal.libsignal.protocol.ecc.ECKeyPair
+actual typealias IdentityKey = org.signal.libsignal.protocol.IdentityKey
 
 
-actual typealias IdentityKeyPair = org.whispersystems.libsignal.IdentityKeyPair
-actual typealias SignedPreKeyRecord = org.whispersystems.libsignal.state.SignedPreKeyRecord
-actual typealias PreKeyRecord = org.whispersystems.libsignal.state.PreKeyRecord
+actual typealias IdentityKeyPair = org.signal.libsignal.protocol.IdentityKeyPair
+actual typealias SignedPreKeyRecord = org.signal.libsignal.protocol.state.SignedPreKeyRecord
+actual typealias PreKeyRecord = org.signal.libsignal.protocol.state.PreKeyRecord
 actual class SessionBuilder actual constructor(
     store: SignalProtocolStore,
     address: SignalProtocolAddress
-) : org.whispersystems.libsignal.SessionBuilder(store, address) {
+) : org.signal.libsignal.protocol.SessionBuilder(store, address) {
 
 }
 
-actual typealias SessionCipher = org.whispersystems.libsignal.SessionCipher
+actual typealias SessionCipher = org.signal.libsignal.protocol.SessionCipher
 
-actual typealias UntrustedIdentityException = org.whispersystems.libsignal.UntrustedIdentityException
-actual typealias InvalidKeyException = org.whispersystems.libsignal.InvalidKeyException;
+actual typealias UntrustedIdentityException = org.signal.libsignal.protocol.UntrustedIdentityException
+actual typealias InvalidKeyException = org.signal.libsignal.protocol.InvalidKeyException;
 
-actual typealias SignalProtocolStore = org.whispersystems.libsignal.state.SignalProtocolStore
+actual typealias SignalProtocolStore = org.signal.libsignal.protocol.state.SignalProtocolStore
 
-actual typealias InvalidKeyIdException = org.whispersystems.libsignal.InvalidKeyIdException
-actual typealias PreKeyStore = org.whispersystems.libsignal.state.PreKeyStore
+actual typealias InvalidKeyIdException = org.signal.libsignal.protocol.InvalidKeyIdException
+actual typealias PreKeyStore = org.signal.libsignal.protocol.state.PreKeyStore
 
-actual typealias SignedPreKeyStore = org.whispersystems.libsignal.state.SignedPreKeyStore
+actual typealias SignedPreKeyStore = org.signal.libsignal.protocol.state.SignedPreKeyStore
 
-actual typealias SessionRecord = org.whispersystems.libsignal.state.SessionRecord
+actual typealias SessionRecord = org.signal.libsignal.protocol.state.SessionRecord
 
-actual typealias SessionStore = org.whispersystems.libsignal.state.SessionStore
+actual typealias SessionStore = org.signal.libsignal.protocol.state.SessionStore
 
-actual typealias IdentityKeyStore = org.whispersystems.libsignal.state.IdentityKeyStore
+actual typealias IdentityKeyStore = org.signal.libsignal.protocol.state.IdentityKeyStore
 
-actual typealias IdentityKeyStoreDirection = org.whispersystems.libsignal.state.IdentityKeyStore.Direction;
+actual typealias IdentityKeyStoreDirection = org.signal.libsignal.protocol.state.IdentityKeyStore.Direction;

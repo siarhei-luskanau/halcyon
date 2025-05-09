@@ -11,7 +11,7 @@ minidns = "1.1.1"
 reactive = "1.3.0"
 researchgate-release = "3.0.2"
 serialization = "1.6.0"
-signalProtocol = "2.8.1"
+signalProtocol = "0.71.0"
 sphinx = "2.10.1"
 
 [libraries]
@@ -41,8 +41,8 @@ minidns = { group = "org.minidns", name = "minidns-hla", version.ref = "minidns"
 
 bouncycastle = { group = "org.bouncycastle", name = "bctls-jdk18on", version.ref = "bouncycastle" }
 
-signal-protocol-java = { group = "org.whispersystems", name = "signal-protocol-java", version.ref = "signalProtocol" }
-signal-protocol-android = { group = "org.whispersystems", name = "signal-protocol-android", version.ref = "signalProtocol" }
+signal-protocol-java = { group = "org.signal", name = "libsignal-client", version.ref = "signalProtocol" }
+signal-protocol-android = { group = "org.signal", name = "libsignal-android", version.ref = "signalProtocol" }
 
 #  = { group = "", name = "", version.ref = "" }
 

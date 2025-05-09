@@ -1,10 +1,13 @@
 package tigase.halcyon.core.xmpp.modules.omemo
 
 import korlibs.crypto.encoding.hex
-import org.whispersystems.curve25519.NoSuchProviderException
-import org.whispersystems.libsignal.*
-import org.whispersystems.libsignal.protocol.PreKeySignalMessage
-import org.whispersystems.libsignal.protocol.SignalMessage
+import org.signal.libsignal.protocol.DuplicateMessageException
+import org.signal.libsignal.protocol.InvalidMessageException
+import org.signal.libsignal.protocol.InvalidVersionException
+import org.signal.libsignal.protocol.LegacyMessageException
+import org.signal.libsignal.protocol.NoSessionException
+import org.signal.libsignal.protocol.message.PreKeySignalMessage
+import org.signal.libsignal.protocol.message.SignalMessage
 import tigase.halcyon.core.exceptions.HalcyonException
 import tigase.halcyon.core.fromBase64
 import tigase.halcyon.core.logger.LoggerFactory
@@ -274,4 +277,4 @@ private fun Message.replaceBody(newBody: String) {
     })
 }
 
-actual typealias CiphertextMessage = org.whispersystems.libsignal.protocol.CiphertextMessage
+actual typealias CiphertextMessage = org.signal.libsignal.protocol.message.CiphertextMessage
