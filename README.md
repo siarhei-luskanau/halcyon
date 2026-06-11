@@ -16,8 +16,9 @@ library for as many platforms as possible. Currently we are focused on
 * JVM
 * JavaScript
 * Android
+* iOS
 
-In the future we want to provide native binary version. 
+In the future we want to provide native binary version for other targets. 
 
 This repository contains source files of the library.
 
